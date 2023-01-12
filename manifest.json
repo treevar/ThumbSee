@@ -1,0 +1,16 @@
+{
+
+  "manifest_version": 2,
+  "name": "thumbSEE",
+  "version": "1.0",
+
+  "description": "Displays thumbnails on Odysee",
+
+  "content_scripts": [
+    {
+      "matches": ["*://odysee.com/@*/*"],
+      "js": ["thumbsee.js"]
+    }
+  ]
+
+}
