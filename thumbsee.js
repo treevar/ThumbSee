@@ -51,7 +51,16 @@ function loadChild(main, data){
             child.parentNode.insertBefore(sec, child);
         }
         sec.style = "margin-bottom: 10px; text-align: center;";
-        sec.innerHTML = "<img class='media__thumb card__first-pane' style='max-width:60%;height:auto;' src='" + url + "' id=thumbseeImageMain>";
+        let img = document.getElementById("thumbseeImageMain");
+        if(img == null){
+            img = document.createElement('img');
+            sec.appendChild(img);
+        }
+        img.className = "media__thumb card__first-pane";
+        img.style = "max-width:60%;height:auto;";
+        img.src = url;
+        img.id = "thumbseeImageMain";
+        //sec.textContent = "<img class='media__thumb card__first-pane' style='max-width:60%;height:auto;' src='" + url + "' id=thumbseeImageMain>";
     }
 }
 
