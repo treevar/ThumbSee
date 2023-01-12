@@ -21,7 +21,7 @@ const DELAY_TIMEOUT = 10000;
 const TIMEOUT_STEPS = DELAY_TIMEOUT / DELAY_TIME;
 
 let timeoutTick = 0;
-
+let rended = false;
 function tick(){
     return ++timeoutTick > TIMEOUT_STEPS;
 }
@@ -34,9 +34,9 @@ function loadChild(main, data){
     }
     if(child == null){
         //if(document.getElementById("vjs_video_3_html5_api")){ return; }//we on a video page
-        if(main.children[1].className != "section card-stack file-page__download"){ return; }//we are not on a page where this works
+        if(main.children[1] && main.children[1].className != "section card-stack file-page__download"){ rended = true; return; }//we are not on a page where this works
         console.log("ThumbSee: Child was null");
-        if(tick()){ timeoutTick = 0; return; }
+        if(tick()){ timeoutTick = 0; rended = true; return; }
         setTimeout(()=>{ loadChild(main, data); }, DELAY_TIME);
     }
     else{
@@ -60,6 +60,7 @@ function loadChild(main, data){
         img.style = "max-width:60%;height:auto;";
         img.src = url;
         img.id = "thumbseeImageMain";
+        rended = true;
         //sec.textContent = "<img class='media__thumb card__first-pane' style='max-width:60%;height:auto;' src='" + url + "' id=thumbseeImageMain>";
     }
 }
@@ -68,7 +69,7 @@ function loadMain(data){
     let main = document.getElementById("main-content");
     if(main == null){
         console.log("ThumbSee: main was null, page is probably loading still");
-        if(tick()){ timeoutTick = 0; console.log("Tick expire"); return; }
+        if(tick()){ timeoutTick = 0; console.log("Tick expire"); rended = true; return; }
         setTimeout(()=>{
             loadMain(data);
         }, DELAY_TIME);
@@ -100,6 +101,9 @@ async function main(){
     while(true){
         if(curUrl != window.location.href){//if we clicked on something
             curUrl = window.location.href;
+            rended = false;
+        }
+        if(rended == false){
             setTimeout(() => {start();}, DELAY_TIME);//call start in a bit, we want the page to load first
         }
         await sleep(DELAY_TIME);
