@@ -8,8 +8,5 @@
         "matches": ["*://odysee.com/@*/*"],
         "js": ["thumbsee.js"]
       }
-    ],
-    "permissions": [
-        "activeTab"
     ]
 }
