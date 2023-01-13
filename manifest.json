@@ -11,6 +11,8 @@
       "matches": ["*://odysee.com/@*/*"],
       "js": ["thumbsee.js"]
     }
-  ]
-
+  ],
+  "icons": {
+    "128": "icon.png"
+  }
 }
