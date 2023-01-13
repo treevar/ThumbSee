@@ -11,6 +11,7 @@ Displays thumbnails on odysee pages
 > - Go to your extensions page in firefox (about:addons)
 > - Click gear icon
 > - Click **Install Add-on From File...**
+> - Select the .xpi file you downloaded earlier
 > 
 ### Chrome (Chromium)
 > ### Chrome Web Store
