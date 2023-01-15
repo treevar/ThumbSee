@@ -19,9 +19,7 @@ Displays thumbnails on odysee pages
 > ### Chrome Web Store
 > > [UNDER REVIEW]
 > ### Manual
-> - [Download the latest chromium build here](https://github.com/treevar/ThumbSee/tree/chromium)
-> - Unzip
+> - [Download the chromium extension here](https://github.com/treevar/ThumbSee/releases/tag/chrome)
 > - In your browser's extension page turn on devleoper mode in the top right (chrome://extensions/)
-> - Click **Load Unpacked**
-> - Select the folder that contains manifest.json and thumbsee.js (You unzipped it earlier)
+> - Drag the .crx file you downloaded onto the page
 >
