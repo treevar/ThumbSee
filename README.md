@@ -1,4 +1,6 @@
 # ThumbSee
+![ThumbSee Logo](./icon.png)
+
 Displays thumbnails on odysee pages
 
 ## Installation
