@@ -17,7 +17,7 @@ Displays thumbnails on odysee pages
 > 
 ### Chrome (Chromium)
 > ### Chrome Web Store
-> > [UNDER REVIEW]
+> > https://chrome.google.com/webstore/detail/thumbsee/jdgipneahaabnlcfomeogakemmlceofe
 > ### Manual
 > - [Download the chromium extension here](https://github.com/treevar/ThumbSee/releases/tag/chrome)
 > - In your browser's extension page turn on devleoper mode in the top right (chrome://extensions/)
