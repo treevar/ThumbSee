@@ -17,41 +17,43 @@
 */
 
 const DELAY_TIME = 200;
-const elemQS = "#main-content > div > .card";//selector for element we need to insert before
+const TICKOUT = 10 * (1000 / DELAY_TIME);//Seconds * (ticks per second)
+const ELEM_QS = "#main-content > div > .card";//selector for element we need to insert before
+const DL_BUTTON_QS = "button[title=\"Download\"]";//selector used for finding download button
+//ELEM_QS + " > div > .card__main-actions > button[title=\"Download\"]" <--- qs for dl button that checks if the button is where it "should" be
 
-//Returns whether the query selctor qs is found within the document
-function elemExits(qs){
+//Returns whether the query selector qs is found within the document
+function elemExists(qs) {
     return document.querySelector(qs) != null;
 }
 
 //Checks every timeout ms for whether the given query selector is found in the document
 //Returns a promise that resolves when the given query selector is found
-//  note: if the query selector is never found then this doesn't resolve
-function waitFormElem(querySelector, timeout){
-    return new Promise (function(resolve, reject){
-        const interID = setInterval(function(){
-            if(elemExits(querySelector)){ clearInterval(interID); resolve(); }
+//If it checks ticks times and doesn't find it, it will reject
+//ticks is optional, if not included then it will never tickout
+function waitForElem(querySelector, timeout, ticks) {
+    return new Promise((resolve, reject) => {
+        const interID = setInterval(() => {
+            if (elemExists(querySelector)) { clearInterval(interID); resolve(); }
+            if (ticks != null && ticks-- == 0) { clearInterval(interID); reject("querySelector not found before tickout"); }
         }, timeout);
-         
     });
 }
 
 
 //Adds the thumbnail image to the page
-function loadThumbnail(data){
-    let child = document.querySelector(elemQS);
-    let startI = data.indexOf("https://", data.indexOf("https://thumbnails.odycdn.com") + 30);
-    let url = data.substring(startI, data.indexOf('"', startI));//get thumbnail url
+function loadThumbnail(url) {
+    let child = document.querySelector(ELEM_QS);
     let sec = document.getElementById("thumbseeImageSection");
-    if(sec == null){//if we havent made the section yet
+    if (sec == null) {//if we havent made the section yet
         sec = document.createElement('section');
         sec.id = "thumbseeImageSection";
         sec.className = "card";
         child.parentNode.insertBefore(sec, child);
     }
-    sec.style = "margin-bottom: 10px; text-align: center;";
+    sec.style = "margin-bottom:10px;text-align:center;";
     let img = document.getElementById("thumbseeImageMain");
-    if(img == null){//if we havent already loaded the image
+    if (img == null) {//if we havent already loaded the image
         img = document.createElement('img');
         sec.appendChild(img);
     }
@@ -59,34 +61,42 @@ function loadThumbnail(data){
     img.style = "max-width:60%;height:auto;";
     img.src = url;
     img.id = "thumbseeImageMain";
-    rended = true;
 }
 
-//Retuns a promise that resolves in ms milliseconds
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function start(){
-    if(window.location.href.match(/^.*:\/\/odysee.com\/@.*\/.*$/)){//are we on a proper page?
-        //console.log("ThumbSee: Started");
-        await waitFormElem(elemQS, DELAY_TIME);//wait until that element is loaded
-        if(document.querySelector("svg.icon.icon--Download") == null){ return; }//are we on a page with a download button?
-        //console.log("Loaded");
-        fetch(window.location.href).then(function(res){
+//Trys to get a thumbnail url for the current page
+//Returns a promise that resolves to the thumbnail image url
+//If no thumbnail is found then the promise is rejected
+function getImageUrl() {
+    return new Promise((resolve, reject) => {
+        fetch(window.location.href).then((res) => {
+            if (res.status != 200) { reject("Response status was not OK"); }
             return res.text();
-
         }).then((data) => {
-            loadThumbnail(data);
+            //find a meta tag that contains the thumbnail url
+            let startSearchIndex = data.indexOf("content=\"https://thumbnails.odycdn.com");
+            if (startSearchIndex == -1) { reject("Thumbnail image url could not be found"); }
+            startSearchIndex += 40;//currently the index is at the start of what we searched for, so add 40 to get at the end
+            let url = data.substring(data.indexOf("http", startSearchIndex), data.indexOf('"', startSearchIndex));
+            resolve(url);
         });
+    });
+}
+
+async function start() {
+    if (window.location.href.match(/^.*:\/\/odysee.com\/@.*\/.*$/)) {//are we on a proper page?
+        //waits for ELEM_QS to be loaded and then loads the image (if an image url was found)
+        waitForElem(ELEM_QS, DELAY_TIME, TICKOUT).then(() => {
+            if(!elemExists(DL_BUTTON_QS)){ return; }//This is not a download page so we don't want to continue
+            else { getImageUrl().then((url) => { loadThumbnail(url); }, (err) => { console.log("Thumbsee: " + err); }); }
+        }, (err) => { console.log("Thumbsee: " + err); });
     }
 
 }
 
 let curUrl = null;
 //whenever the URL changes, call start
-const mainInterval = setInterval(function(){
-    if(curUrl != window.location.href){
+const mainInterval = setInterval(() => {
+    if (curUrl != window.location.href) {
         curUrl = window.location.href;
         start();
     }
