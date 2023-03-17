@@ -1,5 +1,5 @@
 # ThumbSee
-![ThumbSee Logo](./icon.png)
+![ThumbSee Logo](./icon/128.png)
 
 Displays thumbnails on odysee pages
 
