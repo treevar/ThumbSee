@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ThumbSee",
-  "version": "1.3",
-  "description": "Displays thumbnails on Odysee download pages",
+  "version": "1.3.1",
+  "description": "Odysee pages with a download button do not show any image (Such as pages for stl files). This extension retrieves the the thumbnail image (which is full size) and adds it above the download button. This allows you to SEE the THUMBnail",
   "content_scripts": [
     {
       "matches": ["*://odysee.com/*"],
