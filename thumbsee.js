@@ -1,20 +1,23 @@
-/*
-    ThumbSee - SEE the THUMBnails :)
-    Copyright (C) 2023 treevar
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *\ 
+ *  ThumbSee - SEE the THUMBnails :)                                         *
+ *      Main file                                                            *
+ *  Copyright (C) 2023 treevar                                               *
+ *                                                                           *
+ *                                                                           *
+ *  This program is free software: you can redistribute it and/or modify     *
+ *  it under the terms of the GNU General Public License as published by     *
+ *  the Free Software Foundation, either version 3 of the License, or        *
+ *  (at your option) any later version.                                      *
+ *                                                                           *
+ *  This program is distributed in the hope that it will be useful,          *  
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            *
+ *  GNU General Public License for more details.                             *
+ *                                                                           *
+ *  You should have received a copy of the GNU General Public License        *
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.   *
+\* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
 const DELAY_TIME = 200;
 const TICKOUT = 10 * (1000 / DELAY_TIME);//Seconds * (ticks per second)
 const ELEM_QS = "#main-content > div > .card";//selector for element we need to insert before
@@ -39,22 +42,11 @@ function waitForElem(querySelector, timeout, ticks) {
     });
 }
 
-//Returns s promise that resolves to the value of the specified key
-//If there is an error, null is returned
-function getFromStorage(key){
-    return browser.storage.local.get(key).then((result) => {
-        return result[key];
-    }).catch(()=>{
-        return null;
-    });
-}
-
 //Updates the scale of the image
 //Takes an integer percentage for the scale
-function setImageScale(scale){
-    //if(!Number.isInteger(scale)){ return; }
+function setImageScale(scale) {
     let img = document.getElementById("thumbseeImageMain");
-    if(img != null){
+    if (img != null) {
         img.style.width = "auto";
         img.style.maxHeight = scale + "vh";
     }
@@ -65,7 +57,7 @@ function loadThumbnail(url) {
     let child = document.querySelector(ELEM_QS);
     let sec = document.getElementById("thumbseeImageSection");
     if (sec == null) {//if we havent made the section yet
-        sec = document.createElement('section');
+        sec = document.createElement("section");
         sec.id = "thumbseeImageSection";
         sec.className = "card";
         child.parentNode.insertBefore(sec, child);
@@ -73,7 +65,7 @@ function loadThumbnail(url) {
     sec.style = "margin-bottom:10px;text-align:center;";
     let img = document.getElementById("thumbseeImageMain");
     if (img == null) {//if we havent already loaded the image
-        img = document.createElement('img');
+        img = document.createElement("img");
         img.id = "thumbseeImageMain";
         img.className = "media__thumb";
         sec.appendChild(img);
@@ -107,7 +99,7 @@ async function start() {
     if (window.location.href.match(/^.*:\/\/odysee.com\/@.*\/.*$/)) {//are we on a proper page?
         //waits for ELEM_QS to be loaded and then loads the image (if an image url was found)
         waitForElem(ELEM_QS, DELAY_TIME, TICKOUT).then(() => {
-            if(!elemExists(DL_BUTTON_QS)){ return; }//This is not a download page so we don't want to continue
+            if (!elemExists(DL_BUTTON_QS)) { return; }//This is not a download page so we don't want to continue
             else { getImageUrl().then((url) => { loadThumbnail(url); }, (err) => { console.log("Thumbsee: " + err); }); }
         }, (err) => { console.log("Thumbsee: " + err); });
     }

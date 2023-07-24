@@ -5,14 +5,22 @@
   "description": "Displays thumbnails on Odysee download pages",
   "content_scripts": [
     {
-      "matches": ["*://odysee.com/*"],
-      "js": ["thumbsee.js"]
+      "matches": [
+        "*://odysee.com/*"
+      ],
+      "js": [
+        "common.js",
+        "thumbsee.js"
+      ]
     }
   ],
-  "background":{
-    "scripts": ["background.js"]
+  "background": {
+    "scripts": [
+      "common.js",
+      "background.js"
+    ]
   },
-  "browser_action":{
+  "browser_action": {
     "default_popup": "popup.html"
   },
   "icons": {
@@ -21,5 +29,8 @@
     "48": "icon/48.png",
     "128": "icon/128.png"
   },
-  "permissions": ["activeTab", "storage"]
+  "permissions": [
+    "activeTab",
+    "storage"
+  ]
 }

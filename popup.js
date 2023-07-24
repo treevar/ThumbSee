@@ -1,25 +1,14 @@
-//Returns s promise that resolves to the value of the specified key
-//If there is an error, null is returned
-function getFromStorage(key){
-    return browser.storage.local.get(key).then((result) => {
-        return result[key];
-    }).catch(()=>{
-        return null;
-    });
-}
-
-//Saves specified key value pair to storage
-function setToStorage(key, value){
-    let obj = {};
-    obj[key] = value;
-    browser.storage.local.set(obj);
-}
+/* * * * * * * * * * * * * * * * * * *\
+ *  ThumbSee - SEE the THUMBnails :) *
+ *      Popup page JS                *
+ *  Copyright (C) 2023 treevar       *
+\* * * * * * * * * * * * * * * * * * */
 
 let slider = document.getElementById("scaleSlider");
-let sliderValue = document.getElementById("sliderValue"); 
+let sliderValue = document.getElementById("sliderValue");
 
-getFromStorage("imageScale").then((value)=>{ 
-    slider.value = value; 
+getFromStorage("imageScale").then((value) => {
+    slider.value = value;
     sliderValue.textContent = slider.value;
 });
 
