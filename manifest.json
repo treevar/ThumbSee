@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "ThumbSee",
   "version": "1.4",
   "description": "Displays thumbnails on Odysee download pages",
@@ -9,18 +9,19 @@
         "*://odysee.com/*"
       ],
       "js": [
-        "js/common.js",
         "js/thumbsee.js"
       ]
     }
   ],
+  "web_accessible_resources": [{
+    "matches": ["*://odysee.com/*"],
+    "resources": ["js/common.js"]
+  }],
   "background": {
-    "scripts": [
-      "js/common.js",
-      "js/background.js"
-    ]
+    "service_worker": "js/background.js",
+    "type": "module"
   },
-  "browser_action": {
+  "action": {
     "default_popup": "html/popup.html"
   },
   "icons": {

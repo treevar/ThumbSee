@@ -7,7 +7,7 @@
 //Returns s promise that resolves to the value of the specified key
 //If there is an error, null is returned
 function getFromStorage(key){
-    return browser.storage.local.get(key).then((result) => {
+    return chrome.storage.local.get([key]).then((result) => {
         return result[key];
     }).catch(()=>{
         return null;
@@ -18,5 +18,7 @@ function getFromStorage(key){
 function setToStorage(key, value){
     let obj = {};
     obj[key] = value;
-    browser.storage.local.set(obj);
+    chrome.storage.local.set(obj);
 }
+
+export {getFromStorage, setToStorage};

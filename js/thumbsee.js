@@ -17,7 +17,7 @@
  *  You should have received a copy of the GNU General Public License        *
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.   *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
+import("./common.js").then((util) => {
 const DELAY_TIME = 200;
 const TICKOUT = 10 * (1000 / DELAY_TIME);//Seconds * (ticks per second)
 const ELEM_QS = "#main-content > div > .card";//selector for element we need to insert before
@@ -70,7 +70,7 @@ function loadThumbnail(url) {
         img.className = "media__thumb";
         sec.appendChild(img);
     }
-    getFromStorage("imageScale").then((value) => {
+    util.getFromStorage("imageScale").then((value) => {
         setImageScale(value);
     });
     img.src = url;
@@ -109,7 +109,7 @@ async function start() {
 let curUrl = null;
 
 //Listener that updates image scale when the stored scale value is changed
-browser.storage.onChanged.addListener((changes) => {
+chrome.storage.onChanged.addListener((changes) => {
     if (changes.imageScale) {
         setImageScale(changes.imageScale.newValue);
     }
@@ -123,3 +123,4 @@ const mainInterval = setInterval(() => {
         start();
     }
 }, DELAY_TIME);
+});
