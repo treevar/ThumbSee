@@ -53,11 +53,10 @@ function getFromStorage(key){
 //Takes an integer percentage for the scale
 function setImageScale(scale){
     //if(!Number.isInteger(scale)){ return; }
-    console.log(scale);
     let img = document.getElementById("thumbseeImageMain");
     if(img != null){
-        img.style.width = scale + '%';
-        img.style.height = "auto";
+        img.style.width = "auto";
+        img.style.maxHeight = scale + "vh";
     }
 }
 
