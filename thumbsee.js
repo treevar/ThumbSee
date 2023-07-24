@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
 const DELAY_TIME = 200;
 const TICKOUT = 10 * (1000 / DELAY_TIME);//Seconds * (ticks per second)
 const ELEM_QS = "#main-content > div > .card";//selector for element we need to insert before
@@ -40,6 +39,27 @@ function waitForElem(querySelector, timeout, ticks) {
     });
 }
 
+//Returns s promise that resolves to the value of the specified key
+//If there is an error, null is returned
+function getFromStorage(key){
+    return browser.storage.local.get(key).then((result) => {
+        return result[key];
+    }).catch(()=>{
+        return null;
+    });
+}
+
+//Updates the scale of the image
+//Takes an integer percentage for the scale
+function setImageScale(scale){
+    //if(!Number.isInteger(scale)){ return; }
+    console.log(scale);
+    let img = document.getElementById("thumbseeImageMain");
+    if(img != null){
+        img.style.width = scale + '%';
+        img.style.height = "auto";
+    }
+}
 
 //Adds the thumbnail image to the page
 function loadThumbnail(url) {
@@ -55,12 +75,14 @@ function loadThumbnail(url) {
     let img = document.getElementById("thumbseeImageMain");
     if (img == null) {//if we havent already loaded the image
         img = document.createElement('img');
+        img.id = "thumbseeImageMain";
+        img.className = "media__thumb";
         sec.appendChild(img);
     }
-    img.className = "media__thumb";
-    img.style = "max-width:60%;height:auto;";
+    getFromStorage("imageScale").then((value) => {
+        setImageScale(value);
+    });
     img.src = url;
-    img.id = "thumbseeImageMain";
 }
 
 //Trys to get a thumbnail url for the current page
@@ -94,6 +116,15 @@ async function start() {
 }
 
 let curUrl = null;
+
+//Listener that updates image scale when the stored scale value is changed
+browser.storage.onChanged.addListener((changes) => {
+    if (changes.imageScale) {
+        setImageScale(changes.imageScale.newValue);
+    }
+});
+
+
 //whenever the URL changes, call start
 const mainInterval = setInterval(() => {
     if (curUrl != window.location.href) {
