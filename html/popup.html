@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Image Scale</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: black;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: whitesmoke;
+        }
+
+        #sliderContainer {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: whitesmoke;
+        }
+
+        #scaleSlider {
+            width: 300px;
+        }
+
+        #scaleValue {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Image Scale</h1>
+    <div id="sliderContainer">
+        <input type="range" id="scaleSlider" min="0" max="100" value="60">
+        <span id="scaleValue">Scale: <span id="sliderValue"></span>%</span>
+    </div>
+    <script src="../js/popup.js"></script>
+</body>
+
+</html>
