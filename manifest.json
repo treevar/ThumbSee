@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ThumbSee",
   "version": "1.4",
-  "description": "Displays thumbnails on Odysee download pages",
+  "description": "Odysee pages with a download button do not show any image. This adds the thumbnail image (but bigger) above the download button.",
   "content_scripts": [
     {
       "matches": [
