@@ -9,12 +9,10 @@ Displays thumbnails on odysee pages
 > > https://addons.mozilla.org/en-US/firefox/addon/thumbsee/
 > 
 > ### Manual
-> - Make a .zip of the all of the files in the repo
-> - Change the `.zip` to `.xpi`
-> - Go to your extensions page in firefox (about:addons)
-> - Click gear icon
-> - Click **Install Add-on From File...**
-> - Select the .xpi file from earlier
+> - [Download the firefox extension here](https://github.com/treevar/ThumbSee/releases)
+> - Go to your browser's extension page (about:addons)
+> - Click gear icon and select 'Install Add-on from file...'
+> - Select the .xpi file from the first step
 > 
 ### Chrome (Chromium)
 > ### Chrome Web Store
