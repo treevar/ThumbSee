@@ -22,7 +22,6 @@ const DELAY_TIME = 200;
 const TICKOUT = 10 * (1000 / DELAY_TIME);//Seconds * (ticks per second)
 const ELEM_QS = "#main-content > div > .card";//selector for element we need to insert before
 const DL_BUTTON_QS = "button[title=\"Download\"]";//selector used for finding download button
-//ELEM_QS + " > div > .card__main-actions > button[title=\"Download\"]" <--- qs for dl button that checks if the button is where it "should" be
 
 //Returns whether the query selector qs is found within the document
 function elemExists(qs) {
@@ -96,14 +95,10 @@ function getImageUrl() {
 }
 
 async function start() {
-    if (window.location.href.match(/^.*:\/\/odysee.com\/@.*\/.*$/)) {//are we on a proper page?
-        //waits for ELEM_QS to be loaded and then loads the image (if an image url was found)
-        waitForElem(ELEM_QS, DELAY_TIME, TICKOUT).then(() => {
-            if (!elemExists(DL_BUTTON_QS)) { return; }//This is not a download page so we don't want to continue
-            else { getImageUrl().then((url) => { loadThumbnail(url); }, (err) => { console.log("Thumbsee: " + err); }); }
-        }, (err) => { console.log("Thumbsee: " + err); });
-    }
-
+    //waits for DL button to be loaded and then loads the image (if an image url was found)
+    waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {
+        getImageUrl().then((url) => { loadThumbnail(url); }, (err) => { console.log("Thumbsee: " + err); });
+    }, ()=>{});
 }
 
 let curUrl = null;
