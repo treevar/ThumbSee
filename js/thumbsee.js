@@ -22,7 +22,8 @@ const DELAY_TIME = 200;
 const TICKOUT = 10 * (1000 / DELAY_TIME);//Seconds * (ticks per second)
 const ELEM_QS = "#main-content > div > .card";//selector for element we need to insert before
 const DL_BUTTON_QS = "button[title=\"Download\"]";//selector used for finding download button
-const BTN_GROUP_QS = ".claim-preview__actions";//selector for group of buttons (follow/join buttons)
+//const BTN_GROUP_QS = ".claim-preview__actions";//selector for group of buttons (follow/join buttons)
+const BTN_GROUP_QS ="#main-content > div > .card:nth-child(3) > div > div > div";
 
 //Returns whether the query selector qs is found within the document
 function elemExists(qs) {
@@ -103,7 +104,11 @@ async function start() {
             //Move download button by the other buttons (follow/join)
             let dlBtn = document.querySelector(DL_BUTTON_QS);
             let btnGroup = document.querySelector(BTN_GROUP_QS);
-            btnGroup.prepend(dlBtn);
+
+            dlBtn.style.marginLeft = "10px";
+            dlBtn.style.height = "30px";
+            dlBtn.style.alignSelf = "center";
+            btnGroup.append(dlBtn);
             //Remove original download button section
             let ogBtnSection = document.querySelector("#main-content > div > .card:not(#thumbseeImageSection)");
             ogBtnSection.style.display = "none";
