@@ -17,7 +17,8 @@
         }
 
         .sectionContainer {
-            margin-top: 20px;
+            margin-top: 15px;
+            margin-bottom: 0px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -31,6 +32,12 @@
         #scaleValue {
             margin-top: 10px;
         }
+        hr{
+            border: 0;
+            height: 2px;
+            background-image: linear-gradient(to right, transparent, whitesmoke, transparent); 
+            margin-top: 15px;
+        }
     </style>
 </head>
 
@@ -40,12 +47,16 @@
         <input type="range" id="scaleSlider" min="0" max="100" value="60">
         <span id="scaleValue">Scale: <span id="sliderValue"></span>%</span>
     </div>
+    <hr>
     <div id="layoutContainer" class="sectionContainer">
-        <select name="layout" id="layoutSelector">
-            <option value="0">Default</option>
-            <option value="1">Title</option>
-            <option value="2">Button Group</option>
-        </select>
+        <span>
+            Button Location: 
+            <select name="layoutSelector" id="layoutSelector">
+                <option value="0">Default</option>
+                <option value="1">Title</option>
+                <option value="2">Button Group</option>
+            </select>
+        </span>
     </div>
     <script src="../js/common.js"></script>
     <script src="../js/popup.js"></script>
