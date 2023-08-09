@@ -16,7 +16,7 @@
             color: whitesmoke;
         }
 
-        #sliderContainer {
+        .sectionContainer {
             margin-top: 20px;
             display: flex;
             flex-direction: column;
@@ -36,9 +36,16 @@
 
 <body>
     <h1>Image Scale</h1>
-    <div id="sliderContainer">
+    <div id="sliderContainer" class="sectionContainer">
         <input type="range" id="scaleSlider" min="0" max="100" value="60">
         <span id="scaleValue">Scale: <span id="sliderValue"></span>%</span>
+    </div>
+    <div id="layoutContainer" class="sectionContainer">
+        <select name="layout" id="layoutSelector">
+            <option value="0">Default</option>
+            <option value="1">Title</option>
+            <option value="2">Button Group</option>
+        </select>
     </div>
     <script src="../js/common.js"></script>
     <script src="../js/popup.js"></script>

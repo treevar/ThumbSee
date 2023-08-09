@@ -20,10 +20,15 @@
 
 const DELAY_TIME = 200;
 const TICKOUT = 10 * (1000 / DELAY_TIME);//Seconds * (ticks per second)
+
 const ELEM_QS = "#main-content > div > .card";//selector for element we need to insert before
 const DL_BUTTON_QS = "button[title=\"Download\"]";//selector used for finding download button
-//const BTN_GROUP_QS = ".claim-preview__actions";//selector for group of buttons (follow/join buttons)
-const BTN_GROUP_QS ="#main-content > div > .card:nth-child(3) > div > div > div";
+const BTN_GROUP_QS = ".claim-preview__actions";//selector for group of buttons (follow/join buttons)
+const TITLE_BTN_QS ="#main-content > div > .card:nth-child(3) > div > div > div";
+const DL_BTN_SECTION_QS = "#main-content > div > .card:not(#thumbseeImageSection)";
+
+let styles = [];
+let curLayout = 0;
 
 //Returns whether the query selector qs is found within the document
 function elemExists(qs) {
@@ -41,6 +46,28 @@ function waitForElem(querySelector, timeout, ticks) {
             if (ticks != null && ticks-- == 0) { clearInterval(interID); reject("querySelector not found before tickout"); }
         }, timeout);
     });
+}
+
+//Move child to be a child of the newParent, either appended or prepended
+function moveChild(child, newParent, append){
+    let elem = document.querySelector(child);
+    let parent = document.querySelector(newParent);
+    if(append){ parent.append(elem); }
+    else{ parent.prepend(elem); }
+}
+
+//Save current css of object
+function saveCSS(key, qs){
+    let elem = document.querySelector(qs);
+    if(elem == null){ return; }
+    styles[key] = elem.style;
+}
+
+//Set elems css to stored value
+function restoreCSS(key, qs){
+    let elem = document.querySelector(qs);
+    if(elem == null){ return; }
+    elem.style = styles[key]; 
 }
 
 //Updates the scale of the image
@@ -96,22 +123,43 @@ function getImageUrl() {
     });
 }
 
+function setLayout(){
+    let dlBtn = document.querySelector(DL_BUTTON_QS);
+    let ogBtnSection = document.querySelector(DL_BTN_SECTION_QS);
+    if(curLayout != 0){
+        if(curLayout == 1){//Title
+            dlBtn.style.marginLeft = "10px";
+            dlBtn.style.height = "25px";
+            dlBtn.style.alignSelf = "center";
+            
+            moveChild(DL_BUTTON_QS, TITLE_BTN_QS, true);
+        }
+        else if(curLayout == 2){//Group
+            restoreCSS("dl_btn", DL_BUTTON_QS);
+            if(elemExists(BTN_GROUP_QS)){//Named uploads
+                moveChild(DL_BUTTON_QS, BTN_GROUP_QS, false);
+            }
+            else{//Anonymous
+                moveChild(DL_BUTTON_QS, "#main-content > div > .card:nth-child(3) > div > div", true);
+            }
+        }
+        //Remove original download button section
+        ogBtnSection.style.display = "none";
+    }
+    else{
+        ogBtnSection.style.display = null;
+        moveChild(DL_BUTTON_QS, DL_BTN_SECTION_QS + " > div > div:nth-child(2)", true);
+        restoreCSS("dl_btn", DL_BUTTON_QS);
+    }
+}
+
 async function start() {
     //waits for DL button to be loaded and then loads the image (if an image url was found)
     waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {
         getImageUrl().then((url) => { 
             loadThumbnail(url); 
-            //Move download button by the other buttons (follow/join)
-            let dlBtn = document.querySelector(DL_BUTTON_QS);
-            let btnGroup = document.querySelector(BTN_GROUP_QS);
-
-            dlBtn.style.marginLeft = "10px";
-            dlBtn.style.height = "30px";
-            dlBtn.style.alignSelf = "center";
-            btnGroup.append(dlBtn);
-            //Remove original download button section
-            let ogBtnSection = document.querySelector("#main-content > div > .card:not(#thumbseeImageSection)");
-            ogBtnSection.style.display = "none";
+            saveCSS("dl_btn", DL_BUTTON_QS);
+            setLayout();
         }, (err) => { console.log("Thumbsee: " + err); });
     }, ()=>{});
 }
@@ -122,6 +170,10 @@ let curUrl = null;
 browser.storage.onChanged.addListener((changes) => {
     if (changes.imageScale) {
         setImageScale(changes.imageScale.newValue);
+    }
+    else if(changes.layout){
+        curLayout = changes.layout.newValue;
+        setLayout();
     }
 });
 
