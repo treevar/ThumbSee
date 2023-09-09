@@ -17,7 +17,7 @@
         }
 
         .sectionContainer {
-            margin-top: 15px;
+            margin-top: 0px;
             margin-bottom: 0px;
             display: flex;
             flex-direction: column;
@@ -32,30 +32,52 @@
         #scaleValue {
             margin-top: 10px;
         }
-        hr{
+
+        hr {
             border: 0;
             height: 2px;
-            background-image: linear-gradient(to right, transparent, whitesmoke, transparent); 
+            background-image: linear-gradient(to right, transparent, whitesmoke, transparent);
             margin-top: 15px;
+            margin-bottom: 0px;
+        }
+
+        .option {
+            margin-top: 5px;
+            border-style: solid;
+            border-width: 1px;
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+            border-image: linear-gradient(to right, transparent, whitesmoke, transparent) 1;
+            padding-bottom: 5px;
+            width: 90%;
         }
     </style>
 </head>
 
 <body>
-    <h1>Image Scale</h1>
+    <h1>Settings</h1>
     <div id="sliderContainer" class="sectionContainer">
         <input type="range" id="scaleSlider" min="0" max="100" value="60">
-        <span id="scaleValue">Scale: <span id="sliderValue"></span>%</span>
+        <span id="scaleValue" title="Change how big images can be on the page, in % of page height">Max Image Height: <span id="sliderValue"></span>%</span>
     </div>
     <hr>
     <div id="layoutContainer" class="sectionContainer">
-        <span>
-            Button Location: 
+        <span class="option" style="margin-top: 10px">
+            <span title="Location of the download button">DL Button Location: </span>
             <select name="layoutSelector" id="layoutSelector">
                 <option value="0">Default</option>
                 <option value="1">Title</option>
                 <option value="2">Button Group</option>
             </select>
+        </span>
+        <span class="option">
+            <span title="Whether or not to hide the bottom popup">Hide Popup: </span>
+            <input type="checkbox" id="popupCheckbox">
+        </span>
+        <span class="option">
+            <span title="Enable/Disable entire extension">Enable: </span>
+            <input type="checkbox" id="enabledCheckbox">
         </span>
     </div>
     <script src="../js/common.js"></script>

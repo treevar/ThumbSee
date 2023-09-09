@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ThumbSee",
-  "version": "1.4.2",
+  "version": "1.5",
   "description": "Displays thumbnails on Odysee download pages",
   "content_scripts": [
     {

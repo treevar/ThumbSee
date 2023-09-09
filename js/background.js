@@ -5,9 +5,11 @@
 \* * * * * * * * * * * * * * * * * * */
 
 browser.runtime.onInstalled.addListener((details) => {
-  // Check if the extension was installed
+  //Set default settings values when installed
   if (details.reason == "install") {
-    setToStorage("imageScale", 60);
-    setToStorage("layout", 0);
+    setToStorage("imageScale", 60);//60% view height max for image
+    setToStorage("layout", 0);//Default layout
+    setToStorage("enabled", 1);//Enabled
+    setToStorage("popupVisibility", 1);//Doesn't hide the popup
   }
 });

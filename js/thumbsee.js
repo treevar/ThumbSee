@@ -18,17 +18,31 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.   *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const DELAY_TIME = 200;
+const DELAY_TIME = 200;//Time between ticks (ms)
 const TICKOUT = 10 * (1000 / DELAY_TIME);//Seconds * (ticks per second)
 
 const ELEM_QS = "#main-content > div > .card";//selector for element we need to insert before
 const DL_BUTTON_QS = "button[title=\"Download\"]";//selector used for finding download button
 const BTN_GROUP_QS = ".claim-preview__actions";//selector for group of buttons (follow/join buttons)
-const TITLE_BTN_QS ="#main-content > div > .card:nth-child(3) > div > div > div";
-const DL_BTN_SECTION_QS = "#main-content > div > .card:not(#thumbseeImageSection)";
+const ANON_GROUP_QS = "#main-content > div > .card:nth-child(3) > div > div";//selector for after title, used for placing button on anonymous author uploads when 'Button Group' is selected
+const TITLE_BTN_QS = "#main-content > div > .card:nth-child(3) > div > div > div";//selector for where to put dl btn in title
+const DL_BTN_SECTION_QS = "#main-content > div > .card:not(#thumbseeImageSection)";//selector for default section containg dl btn
+const POPUP_QS = "#sticky-d-rc";//selector for bottom popup
 
-let styles = [];
+//Settings
 let curLayout = 0;
+let enabled = 1;
+let popupVis = 1;
+let imgScale = 60;
+let curUrl = null;
+
+//Loads settings from storage
+function init() {
+    getFromStorage("layout").then((value) => { curLayout = value; });
+    getFromStorage("enabled").then((value) => { enabled = value; });
+    getFromStorage("popupVisibility").then((value) => { popupVis = value; });
+    getFromStorage("imageScale").then((value) => { imgScale = value; });
+}
 
 //Returns whether the query selector qs is found within the document
 function elemExists(qs) {
@@ -43,35 +57,21 @@ function waitForElem(querySelector, timeout, ticks) {
     return new Promise((resolve, reject) => {
         const interID = setInterval(() => {
             if (elemExists(querySelector)) { clearInterval(interID); resolve(); }
-            if (ticks != null && ticks-- == 0) { clearInterval(interID); reject("querySelector not found before tickout"); }
+            if (ticks != null && --ticks <= 0) { clearInterval(interID); reject("querySelector not found before tickout"); }
         }, timeout);
     });
 }
 
 //Move child to be a child of the newParent, either appended or prepended
-function moveChild(child, newParent, append){
+function moveChild(child, newParent, append) {
     let elem = document.querySelector(child);
     let parent = document.querySelector(newParent);
-    if(append){ parent.append(elem); }
-    else{ parent.prepend(elem); }
-}
-
-//Save current css of object
-function saveCSS(key, qs){
-    let elem = document.querySelector(qs);
-    if(elem == null){ return; }
-    styles[key] = elem.style;
-}
-
-//Set elems css to stored value
-function restoreCSS(key, qs){
-    let elem = document.querySelector(qs);
-    if(elem == null){ return; }
-    elem.style = styles[key]; 
+    if (append) { parent.append(elem); }
+    else { parent.prepend(elem); }
 }
 
 //Updates the scale of the image
-//Takes an integer percentage for the scale
+//Takes an integer percentage for the scale (0-100)
 function setImageScale(scale) {
     let img = document.getElementById("thumbseeImageMain");
     if (img != null) {
@@ -98,9 +98,7 @@ function loadThumbnail(url) {
         img.className = "media__thumb";
         sec.appendChild(img);
     }
-    getFromStorage("imageScale").then((value) => {
-        setImageScale(value);
-    });
+    setImageScale(imgScale);
     img.src = url;
 }
 
@@ -123,60 +121,89 @@ function getImageUrl() {
     });
 }
 
-function setLayout(){
+//Moves button to desired location and changes styling to accomodate
+function setLayout(curLayout) {
     let dlBtn = document.querySelector(DL_BUTTON_QS);
     let ogBtnSection = document.querySelector(DL_BTN_SECTION_QS);
-    if(curLayout != 0){
-        if(curLayout == 1){//Title
+    if (curLayout != 0) {
+        if (curLayout == 1) {//Title
             dlBtn.style.marginLeft = "10px";
             dlBtn.style.height = "25px";
             dlBtn.style.alignSelf = "center";
-            
+
             moveChild(DL_BUTTON_QS, TITLE_BTN_QS, true);
         }
-        else if(curLayout == 2){//Group
+        else if (curLayout == 2) {//Button Group
             restoreCSS("dl_btn", DL_BUTTON_QS);
-            if(elemExists(BTN_GROUP_QS)){//Named uploads
+            if (elemExists(BTN_GROUP_QS)) {//Named author uploads
                 moveChild(DL_BUTTON_QS, BTN_GROUP_QS, false);
             }
-            else{//Anonymous
-                moveChild(DL_BUTTON_QS, "#main-content > div > .card:nth-child(3) > div > div", true);
+            else {//Anonymous
+                moveChild(DL_BUTTON_QS, ANON_GROUP_QS, true);
             }
         }
         //Remove original download button section
-        ogBtnSection.style.display = "none";
+        hideElem(ogBtnSection);
     }
-    else{
-        ogBtnSection.style.display = null;
-        moveChild(DL_BUTTON_QS, DL_BTN_SECTION_QS + " > div > div:nth-child(2)", true);
-        restoreCSS("dl_btn", DL_BUTTON_QS);
+    else {//Default layout
+        showElem(ogBtnSection);
+        moveChild(DL_BUTTON_QS, DL_BTN_SECTION_QS + " > div > div:nth-child(2)", true);//Move dl btn to original position
+        restoreCSS("dl_btn", DL_BUTTON_QS);//Restore style of dl btn to original
     }
+}
+
+function setPopupVisibility(visible) {
+    if (!visible) { hideElemQS(POPUP_QS); }
 }
 
 async function start() {
-    //waits for DL button to be loaded and then loads the image (if an image url was found)
-    waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {
-        getImageUrl().then((url) => { 
-            loadThumbnail(url); 
-            saveCSS("dl_btn", DL_BUTTON_QS);
-            setLayout();
-        }, (err) => { console.log("Thumbsee: " + err); });
-    }, ()=>{});
+    if (!enabled) { return; }
+
+    waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {//Wait for DL btn to be loaded (if not, timeout)
+        saveCSS("dl_btn", DL_BUTTON_QS);//Save style of DL btn (should be default styling)
+        setPopupVisibility(popupVis);//Hides bottom popup if user wants
+        getImageUrl().then((url) => {//Retrieve image url
+            loadThumbnail(url);//Add image to page
+            setLayout(curLayout);//Move DL btn to desired location
+        }, (err) => { console.log("Thumbsee: " + err); });// :(
+    }, () => { });
 }
 
-let curUrl = null;
-
-//Listener that updates image scale when the stored scale value is changed
+//Listener that updates page when settings are changed
 browser.storage.onChanged.addListener((changes) => {
-    if (changes.imageScale) {
-        setImageScale(changes.imageScale.newValue);
+    if (changes.imageScale != null) {//Image scale
+        imgScale = changes.imageScale.newValue;
+        setImageScale(imgScale);
     }
-    else if(changes.layout){
+    if (changes.layout != null) {//Button location
         curLayout = changes.layout.newValue;
-        setLayout();
+        if (enabled) { setLayout(curLayout); }
+    }
+    if (changes.enabled != null) {//Enabled/Disabled
+        enabled = changes.enabled.newValue;
+        let imgSec = document.getElementById("thumbseeImageSection");
+        if (enabled) {
+            if (imgSec == null) { start(); }
+            else {
+                setLayout(curLayout);
+                setPopupVisibility(popupVis);
+                showElem(imgSec);
+            }
+        }
+        else {//Disabled
+            hideElem(imgSec);
+            setPopupVisibility(true);
+            setLayout(0);
+        }
+    }
+    if (changes.popupVisibility != null) {//Hide/Show bottom popup
+        popupVis = changes.popupVisibility.newValue;
+        setPopupVisibility(popupVis);
     }
 });
 
+
+init();//Load settings
 
 //whenever the URL changes, call start
 const mainInterval = setInterval(() => {
