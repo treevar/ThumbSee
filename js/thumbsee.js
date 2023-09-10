@@ -24,9 +24,9 @@ const TICKOUT = 10 * (1000 / DELAY_TIME);//Seconds * (ticks per second)
 const ELEM_QS = "#main-content > div > .card";//selector for element we need to insert before
 const DL_BUTTON_QS = "button[title=\"Download\"]";//selector used for finding download button
 const BTN_GROUP_QS = ".claim-preview__actions";//selector for group of buttons (follow/join buttons)
-const ANON_GROUP_QS = "#main-content > div > .card:nth-child(3) > div > div";//selector for after title, used for placing button on anonymous author uploads when 'Button Group' is selected
-const TITLE_BTN_QS = "#main-content > div > .card:nth-child(3) > div > div > div";//selector for where to put dl btn in title
-const DL_BTN_SECTION_QS = "#main-content > div > .card:not(#thumbseeImageSection)";//selector for default section containg dl btn
+const ANON_GROUP_QS = "#main-content > div > .card:last-of-type > div > div:last-of-type > span";//selector used for placing button on anonymous-author uploads when 'Button Group' is selected
+const TITLE_BTN_QS = "#main-content > div > .card:last-of-type > div > div > div";//selector for where to put dl btn in title
+const DL_BTN_SECTION_QS = "#main-content > div > .card:not(#thumbseeImageSection)";//selector for default section containing dl btn
 const POPUP_QS = "#sticky-d-rc";//selector for bottom popup
 
 //Settings
@@ -122,24 +122,25 @@ function getImageUrl() {
 }
 
 //Moves button to desired location and changes styling to accomodate
-function setLayout(curLayout) {
+function setLayout(layout) {
     let dlBtn = document.querySelector(DL_BUTTON_QS);
     let ogBtnSection = document.querySelector(DL_BTN_SECTION_QS);
-    if (curLayout != 0) {
-        if (curLayout == 1) {//Title
+    if (layout != 0) {
+        if (layout == 1) {//Title
             dlBtn.style.marginLeft = "10px";
             dlBtn.style.height = "25px";
             dlBtn.style.alignSelf = "center";
 
             moveChild(DL_BUTTON_QS, TITLE_BTN_QS, true);
         }
-        else if (curLayout == 2) {//Button Group
+        else if (layout == 2) {//Button Group
             restoreCSS("dl_btn", DL_BUTTON_QS);
             if (elemExists(BTN_GROUP_QS)) {//Named author uploads
                 moveChild(DL_BUTTON_QS, BTN_GROUP_QS, false);
             }
             else {//Anonymous
                 moveChild(DL_BUTTON_QS, ANON_GROUP_QS, true);
+                dlBtn.style.float = "right";
             }
         }
         //Remove original download button section
@@ -161,10 +162,10 @@ async function start() {
 
     waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {//Wait for DL btn to be loaded (if not, timeout)
         saveCSS("dl_btn", DL_BUTTON_QS);//Save style of DL btn (should be default styling)
+        setLayout(curLayout);//Move DL btn to desired location
         setPopupVisibility(popupVis);//Hides bottom popup if user wants
         getImageUrl().then((url) => {//Retrieve image url
             loadThumbnail(url);//Add image to page
-            setLayout(curLayout);//Move DL btn to desired location
         }, (err) => { console.log("Thumbsee: " + err); });// :(
     }, () => { });
 }
