@@ -4,7 +4,7 @@
  *  Copyright (C) 2023 treevar       *
 \* * * * * * * * * * * * * * * * * * */
 
-let styles = [];//Saved styles
+let savedStyles = [];//Saved styles
 
 //Returns s promise that resolves to the value of the specified key
 //If there is an error, null is returned
@@ -27,14 +27,14 @@ function setToStorage(key, value) {
 function saveCSS(key, qs) {
     let elem = document.querySelector(qs);
     if (elem == null) { return; }
-    styles[key] = elem.style;
+    savedStyles[key] = elem.style;
 }
 
 //Set elems css to stored value
 function restoreCSS(key, qs) {
     let elem = document.querySelector(qs);
     if (elem == null) { return; }
-    elem.style = styles[key];
+    elem.style = savedStyles[key];
 }
 
 function hideElem(elem) {
@@ -47,7 +47,7 @@ function hideElemQS(elemQS) {
 }
 
 function showElem(elem) {
-    if (elem != null) { elem.style.display = null; }
+    if (elem != null) { elem.style.display = ""; }
 }
 
 function showElemQS(elemQS) {

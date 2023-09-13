@@ -148,13 +148,21 @@ function setLayout(layout) {
     }
     else {//Default layout
         showElem(ogBtnSection);
-        moveChild(DL_BUTTON_QS, DL_BTN_SECTION_QS + " > div > div:nth-child(2)", true);//Move dl btn to original position
+
+        //Move dl btn to original position
+        let dlBtnLoc = DL_BTN_SECTION_QS + " > div > div:last-of-type";
+        if (elemExists(dlBtnLoc + " > .section__actions")) { dlBtnLoc += " > div"; }//Some pages have an extra div the button is in 
+        moveChild(DL_BUTTON_QS, dlBtnLoc, true);
+
         restoreCSS("dl_btn", DL_BUTTON_QS);//Restore style of dl btn to original
     }
 }
 
+//Show/Hide bottom popup
+//if user clicked on popup to close it, it will not be shown when showElem is called
 function setPopupVisibility(visible) {
-    if (!visible) { hideElemQS(POPUP_QS); }
+    if (visible) { showElemQS(POPUP_QS); }
+    else { hideElemQS(POPUP_QS); }
 }
 
 async function start() {

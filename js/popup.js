@@ -34,7 +34,7 @@ getFromStorage("popupVisibility").then((value) => {
 //Listeners to save settings when user changes them
 
 slider.addEventListener("input", (event) => {
-    document.getElementById("sliderValue").textContent = event.target.value;
+    sliderValue.textContent = event.target.value;
     setToStorage("imageScale", event.target.value);
 });
 
