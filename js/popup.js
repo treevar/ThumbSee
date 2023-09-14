@@ -6,7 +6,7 @@
 
 let slider = document.getElementById("scaleSlider");
 let sliderValue = document.getElementById("sliderValue");
-let selector = document.getElementById("layoutSelector");
+let selector = document.getElementById("locSelector");
 let enabledCheck = document.getElementById("enabledCheckbox");
 let popupCheck = document.getElementById("popupCheckbox");
 
@@ -17,7 +17,7 @@ getFromStorage("imageScale").then((value) => {
     sliderValue.textContent = slider.value;
 });
 
-getFromStorage("layout").then((value) => {
+getFromStorage("btnLocation").then((value) => {
     selector.value = value;
 });
 
@@ -39,7 +39,7 @@ slider.addEventListener("input", (event) => {
 });
 
 selector.addEventListener("change", (event) => {
-    setToStorage("layout", event.target.value);
+    setToStorage("btnLocation", event.target.value);
 });
 
 enabledCheck.addEventListener("input", (event) => {

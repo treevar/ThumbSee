@@ -8,8 +8,8 @@ browser.runtime.onInstalled.addListener((details) => {
   //Set default settings values when installed
   if (details.reason == "install") {
     setToStorage("imageScale", 60);//60% view height max for image
-    setToStorage("layout", 0);//Default layout
-    setToStorage("enabled", 1);//Enabled
-    setToStorage("popupVisibility", 1);//Doesn't hide the popup
+    setToStorage("btnLocation", "default");//Default location
+    setToStorage("enabled", true);//Enabled
+    setToStorage("popupVisibility", true);//Doesn't hide the popup
   }
 });

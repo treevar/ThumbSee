@@ -30,15 +30,15 @@ const DL_BTN_SECTION_QS = "#main-content > div > .card:not(#thumbseeImageSection
 const POPUP_QS = "#sticky-d-rc";//selector for bottom popup
 
 //Settings
-let curLayout = 0;
-let enabled = 1;
-let popupVis = 1;
+let curBtnLoc = "default";
+let enabled = true;
+let popupVis = true;
 let imgScale = 60;
 let curUrl = null;
 
 //Loads settings from storage
 function init() {
-    getFromStorage("layout").then((value) => { curLayout = value; });
+    getFromStorage("btnLocation").then((value) => { curBtnLoc = value; });
     getFromStorage("enabled").then((value) => { enabled = value; });
     getFromStorage("popupVisibility").then((value) => { popupVis = value; });
     getFromStorage("imageScale").then((value) => { imgScale = value; });
@@ -122,18 +122,28 @@ function getImageUrl() {
 }
 
 //Moves button to desired location and changes styling to accomodate
-function setLayout(layout) {
+function setBtnLocation(loc) {
     let dlBtn = document.querySelector(DL_BUTTON_QS);
     let ogBtnSection = document.querySelector(DL_BTN_SECTION_QS);
-    if (layout != 0) {
-        if (layout == 1) {//Title
+    if (loc == "default") {//Default location
+        showElem(ogBtnSection);
+
+        //Move dl btn to original position
+        let dlBtnLoc = DL_BTN_SECTION_QS + " > div > div:last-of-type";
+        if (elemExists(dlBtnLoc + " > .section__actions")) { dlBtnLoc += " > div"; }//Some pages have an extra div the button is in 
+        moveChild(DL_BUTTON_QS, dlBtnLoc, true);
+
+        restoreCSS("dl_btn", DL_BUTTON_QS);//Restore style of dl btn to original
+    }
+    else {
+        if (loc == "title") {//Title
             dlBtn.style.marginLeft = "10px";
             dlBtn.style.height = "25px";
             dlBtn.style.alignSelf = "center";
 
             moveChild(DL_BUTTON_QS, TITLE_BTN_QS, true);
         }
-        else if (layout == 2) {//Button Group
+        else if (loc == "btngroup") {//Button Group
             restoreCSS("dl_btn", DL_BUTTON_QS);
             if (elemExists(BTN_GROUP_QS)) {//Named author uploads
                 moveChild(DL_BUTTON_QS, BTN_GROUP_QS, false);
@@ -145,16 +155,6 @@ function setLayout(layout) {
         }
         //Remove original download button section
         hideElem(ogBtnSection);
-    }
-    else {//Default layout
-        showElem(ogBtnSection);
-
-        //Move dl btn to original position
-        let dlBtnLoc = DL_BTN_SECTION_QS + " > div > div:last-of-type";
-        if (elemExists(dlBtnLoc + " > .section__actions")) { dlBtnLoc += " > div"; }//Some pages have an extra div the button is in 
-        moveChild(DL_BUTTON_QS, dlBtnLoc, true);
-
-        restoreCSS("dl_btn", DL_BUTTON_QS);//Restore style of dl btn to original
     }
 }
 
@@ -170,7 +170,7 @@ async function start() {
 
     waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {//Wait for DL btn to be loaded (if not, timeout)
         saveCSS("dl_btn", DL_BUTTON_QS);//Save style of DL btn (should be default styling)
-        setLayout(curLayout);//Move DL btn to desired location
+        setBtnLocation(curBtnLoc);//Move DL btn to desired location
         setPopupVisibility(popupVis);//Hides bottom popup if user wants
         getImageUrl().then((url) => {//Retrieve image url
             loadThumbnail(url);//Add image to page
@@ -184,9 +184,9 @@ browser.storage.onChanged.addListener((changes) => {
         imgScale = changes.imageScale.newValue;
         setImageScale(imgScale);
     }
-    if (changes.layout != null) {//Button location
-        curLayout = changes.layout.newValue;
-        if (enabled) { setLayout(curLayout); }
+    if (changes.btnLocation != null) {//Button location
+        curBtnLoc = changes.btnLocation.newValue;
+        if (enabled) { setBtnLocation(curBtnLoc); }
     }
     if (changes.enabled != null) {//Enabled/Disabled
         enabled = changes.enabled.newValue;
@@ -194,7 +194,7 @@ browser.storage.onChanged.addListener((changes) => {
         if (enabled) {
             if (imgSec == null) { start(); }
             else {
-                setLayout(curLayout);
+                setBtnLocation(curBtnLoc);
                 setPopupVisibility(popupVis);
                 showElem(imgSec);
             }
@@ -202,7 +202,7 @@ browser.storage.onChanged.addListener((changes) => {
         else {//Disabled
             hideElem(imgSec);
             setPopupVisibility(true);
-            setLayout(0);
+            setBtnLocation("default");
         }
     }
     if (changes.popupVisibility != null) {//Hide/Show bottom popup
