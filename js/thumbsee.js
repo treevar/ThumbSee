@@ -166,8 +166,8 @@ function setPopupVisibility(visible) {
 }
 
 async function start() {
-    setPopupVisibility(popupVis);//Hides bottom popup if user wants
     if (!enabled) { return; }
+    setPopupVisibility(popupVis);//Hides bottom popup if user wants
 
     waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {//Wait for DL btn to be loaded (if not, timeout)
         saveCSS("dl_btn", DL_BUTTON_QS);//Save style of DL btn (should be default styling)
