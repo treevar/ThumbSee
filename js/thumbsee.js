@@ -166,12 +166,12 @@ function setPopupVisibility(visible) {
 }
 
 async function start() {
+    setPopupVisibility(popupVis);//Hides bottom popup if user wants
     if (!enabled) { return; }
 
     waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {//Wait for DL btn to be loaded (if not, timeout)
         saveCSS("dl_btn", DL_BUTTON_QS);//Save style of DL btn (should be default styling)
         setBtnLocation(curBtnLoc);//Move DL btn to desired location
-        setPopupVisibility(popupVis);//Hides bottom popup if user wants
         getImageUrl().then((url) => {//Retrieve image url
             loadThumbnail(url);//Add image to page
         }, (err) => { console.log("Thumbsee: " + err); });// :(
