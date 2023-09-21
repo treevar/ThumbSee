@@ -168,11 +168,11 @@ import("./common.js").then((util) => {
 
     async function start() {
         if (!enabled) { return; }
+        setPopupVisibility(popupVis);//Hides bottom popup if user wants
 
         waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {//Wait for DL btn to be loaded (if not, timeout)
             util.saveCSS("dl_btn", DL_BUTTON_QS);//Save style of DL btn (should be default styling)
             setBtnLocation(curBtnLoc);//Move DL btn to desired location
-            setPopupVisibility(popupVis);//Hides bottom popup if user wants
             getImageUrl().then((url) => {//Retrieve image url
                 loadThumbnail(url);//Add image to page
             }, (err) => { console.log("Thumbsee: " + err); });// :(
