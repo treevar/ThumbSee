@@ -167,8 +167,7 @@ function setPopupVisibility(visible) {
 
 async function start() {
     if (!enabled) { return; }
-    setPopupVisibility(popupVis);//Hides bottom popup if user wants
-
+    
     waitForElem(DL_BUTTON_QS, DELAY_TIME, TICKOUT).then(() => {//Wait for DL btn to be loaded (if not, timeout)
         saveCSS("dl_btn", DL_BUTTON_QS);//Save style of DL btn (should be default styling)
         setBtnLocation(curBtnLoc);//Move DL btn to desired location
@@ -176,6 +175,11 @@ async function start() {
             loadThumbnail(url);//Add image to page
         }, (err) => { console.log("Thumbsee: " + err); });// :(
     }, () => { });
+
+    waitForElem(POPUP_QS, DELAY_TIME, TICKOUT).then(()=>{//Wait for popup to be loaded (if not, timeout)
+        setPopupVisibility(popupVis);//Hides bottom popup if user wants
+    }, () => {});
+    
 }
 
 //Listener that updates page when settings are changed
